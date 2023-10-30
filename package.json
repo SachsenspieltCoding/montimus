@@ -2,10 +2,18 @@
   "name": "montimus",
   "version": "0.0.0",
   "description": "An open-source self-hosted monitoring solution with customizable status pages",
-  "repository": "https://github.com/SachsenspieltCoding/kuromi.git",
+  "repository": "https://github.com/SachsenspieltCoding/montimus.git",
   "license": "Apache-2.0",
   "private": true,
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\"",
+    "dev:backend": "cd packages/backend && npm run dev",
+    "db:deploy": "cd packages/backend && npx prisma deploy"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
 }
