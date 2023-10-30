@@ -4,7 +4,7 @@
   "draft-pull-request": true,
   "bump-minor-pre-major": true,
   "bump-patch-for-minor-pre-major": true,
-  "group-pull-request-title-pattern": "chore(release): release ${name} ${version}",
+  "group-pull-request-title-pattern": "chore(release): release ${component} ${version}",
   "changelog-sections": [
     {
       "type": "feat",
