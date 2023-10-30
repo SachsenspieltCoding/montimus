@@ -10,7 +10,7 @@ logger.level = 'debug'
 logger.info('Starting backend on port %d', port)
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello World, how are you?')
 })
 
 app.listen(3000, () => {
