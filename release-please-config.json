@@ -4,8 +4,7 @@
   "draft-pull-request": true,
   "bump-minor-pre-major": true,
   "bump-patch-for-minor-pre-major": true,
-  "pull-request-title-pattern": "chore(release): release ${name} ${version}",
-  "pull-request-header": "This is an auto-generated release PR, please review the changes and merge to release.",
+  "group-pull-request-title-pattern": "chore(release): release ${name} ${version}",
   "changelog-sections": [
     {
       "type": "feat",
