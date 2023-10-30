@@ -64,7 +64,7 @@
       "extra-files": [
         {
           "type": "yaml",
-          "path": "openapi.yaml",
+          "path": "openapi.yml",
           "jsonpath": "$.info.version"
         }
       ]
