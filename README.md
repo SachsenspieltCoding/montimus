@@ -4,4 +4,4 @@
 
 ## Name
 
-Montimus is a combination of three words: **Mon**itoring, **Ti**me, and Stat**us**. It is pronounced as "mon-ti-mus" (/mɑntimʊs/).
+Montimus is a combination of three words: **Mon**itoring, **Tim**e, and Stat**us**. It is pronounced as "mon-ti-mus" (/mɑntimʊs/).
