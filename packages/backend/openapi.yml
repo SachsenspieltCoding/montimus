@@ -1,0 +1,51 @@
+openapi: '3.0.2'
+info:
+  title: Montimus API
+  version: '1.0.0'
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: General
+    description: General endpoints
+paths:
+  /:
+    get:
+      tags:
+        - General
+      responses:
+        '200':
+          description: Returns the API version
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                  message:
+                    type: string
+                    description: API version
+                example:
+                  status: 200
+                  message: '1.0.0'
+  /helloworld:
+    get:
+      tags:
+        - General
+      responses:
+        '200':
+          description: Returns a hello world message
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                  message:
+                    type: string
+                    description: Hello world message
+                example:
+                  status: 200
+                  message: 'Hello world!'

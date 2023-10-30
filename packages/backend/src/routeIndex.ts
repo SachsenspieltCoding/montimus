@@ -7,7 +7,7 @@ const router = express.Router()
 export default (app: Express) => {
   registerRoute(helloworld)
 
-  app.use('/v1', router)
+  app.use(router)
 }
 
 function registerRoute(route: Route) {
