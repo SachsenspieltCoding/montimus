@@ -17,6 +17,9 @@ logger.info('Starting backend on port %d', port)
 // Configure Prisma
 const prisma = new PrismaClient()
 
+// Middlewares
+app.use(express.json())
+
 app.get('/', (_req, res) => {
   sendResponse(res, 200, packageJson.version)
 })
@@ -42,3 +45,5 @@ app.listen(3000, async () => {
 
   logger.info('Backend listening on http://localhost:%d', port)
 })
+
+export { logger, prisma }
