@@ -1,6 +1,6 @@
 
 
-# <img src="public/Logo-invert.png" alt="Montimus Logo" float="right" width="200" />
+# <img src="public/github-readme.png" alt="Montimus Logo" float="right" width="200" />
 [![Release Please](https://github.com/SachsenspieltCoding/montimus/actions/workflows/release-please.yml/badge.svg)](https://github.com/SachsenspieltCoding/montimus/actions/workflows/release-please.yml)
 
 
