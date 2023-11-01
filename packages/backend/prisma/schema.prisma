@@ -1,18 +1,41 @@
 datasource db {
-    provider = "sqlite"
-    url      = "file:../../../data/db.sqlite"
+  provider = "sqlite"
+  url      = "file:../../../data/db.sqlite"
 }
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 model Monitor {
-    id          Int      @id @default(autoincrement())
-    name        String
-    description String?
-    url         String
-    interval    Int
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+  type        String  @default("http")
+  url         String
+  interval    Int     @default(60) // seconds
+
+  history MonitorHistory[]
+
+  parameters_json String @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([id, type])
+}
+
+model MonitorHistory {
+  id     Int @id @default(autoincrement())
+  status Int @default(-1)
+
+  monitor   Monitor @relation(fields: [monitorId], references: [id])
+  monitorId Int
+
+  ping      Int?
+  info_json String @default("{}")
+
+  createdAt DateTime @default(now())
+
+  @@index([id, monitorId, createdAt])
 }

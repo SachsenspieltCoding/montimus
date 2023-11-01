@@ -1,7 +1,10 @@
 import { PrismaClientValidationError } from '@prisma/client/runtime/library'
-import { logger, prisma } from '../backend'
+import { prisma } from '../backend'
 import { sendResponse } from '../helpers/response'
 import { Route } from '../route'
+import { createLogger } from '../logger'
+
+const logger = createLogger('api/monitors')
 
 export default [
   {
@@ -9,7 +12,13 @@ export default [
     path: '/monitors',
     handler: async (_req, res) => {
       const monitors = await prisma.monitor.findMany()
-      return sendResponse(res, 200, undefined, monitors)
+      const mons = await Promise.all(
+        monitors.map(async (mon) => ({
+          ...mon,
+          lastHistory: await getLatestHistory(mon.id),
+        }))
+      )
+      return sendResponse(res, 200, undefined, mons)
     },
   } as Route,
   {
@@ -50,7 +59,10 @@ export default [
         return sendResponse(res, 404, 'Monitor not found')
       }
 
-      sendResponse(res, 200, undefined, monitor)
+      sendResponse(res, 200, undefined, {
+        ...monitor,
+        lastHistory: await getLatestHistory(monitor.id),
+      })
     },
   } as Route,
   {
@@ -104,3 +116,14 @@ export default [
     },
   } as Route,
 ]
+
+async function getLatestHistory(monitorId: number) {
+  return await prisma.monitorHistory.findFirst({
+    where: {
+      monitorId,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+}

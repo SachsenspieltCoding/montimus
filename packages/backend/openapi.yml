@@ -51,7 +51,7 @@ paths:
                 example:
                   status: 200
                   message: 'Hello world!'
-  /monitors:
+  /monitors: # TODO: Add lastHistory to monitors when getting
     get:
       tags:
         - Monitors
@@ -179,8 +179,6 @@ paths:
                   status:
                     type: integer
                     description: HTTP status code
-                  data:
-                    $ref: '#/components/schemas/Monitor'
                 example:
                   status: 200
                   data:
@@ -323,6 +321,7 @@ components:
       required:
         - id
         - name
+        - type
         - url
         - interval
         - createdAt
@@ -337,6 +336,9 @@ components:
         description:
           type: string
           description: Monitor description
+        type:
+          type: string
+          description: Monitor type
         url:
           type: string
           description: Monitor URL
