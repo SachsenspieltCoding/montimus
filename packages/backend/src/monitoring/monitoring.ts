@@ -1,10 +1,8 @@
-import { prisma } from '../backend'
+import { logger, prisma } from '../backend'
 import HttpMonitor from './types/HttpMonitor'
 import MonitoringMonitor from '../models/MonitoringMonitor'
 import EventEmitter from 'events'
-import { createLogger } from '../logger'
 
-const logger = createLogger('monitoring', 'debug')
 let monitors: MonitoringMonitor[] = []
 
 export const monitoringEmitter = new EventEmitter()

@@ -1,23 +1,19 @@
-// Configure logging first, so the prefix is set correctly
-import { createLogger } from './logger'
-import initLogger from './logger'
-
-const packageJson = require('../package.json')
-const port = process.env.BACKEND_PORT || 3000
-
-initLogger(packageJson.name)
-const logger = createLogger('main', 'debug')
-
-logger.info('Starting backend on port %d', port)
-
-// Import everything else after logging is configured
 import express from 'express'
+import log4js from 'log4js'
 import routeIndex from './routeIndex'
 import { sendResponse } from './helpers/response'
 import { PrismaClient } from '@prisma/client'
 import { initMonitoring } from './monitoring/monitoring'
 
 const app = express()
+const port = process.env.BACKEND_PORT || 3000
+const packageJson = require('../package.json')
+
+// Configure logging
+const logger = log4js.getLogger(packageJson.name)
+logger.level = process.env.NODE_ENV === 'production' ? 'info' : 'debug'
+
+logger.info('Starting backend on port %d', port)
 
 // Configure Prisma
 const prisma = new PrismaClient()
@@ -54,4 +50,4 @@ app.listen(3000, async () => {
 // Init monitoring
 initMonitoring()
 
-export { prisma, packageJson }
+export { logger, prisma }

@@ -1,10 +1,7 @@
 import { PrismaClientValidationError } from '@prisma/client/runtime/library'
-import { prisma } from '../backend'
+import { logger, prisma } from '../backend'
 import { sendResponse } from '../helpers/response'
 import { Route } from '../route'
-import { createLogger } from '../logger'
-
-const logger = createLogger('api/monitors')
 
 export default [
   {
@@ -37,6 +34,7 @@ export default [
         } else if (error instanceof PrismaClientValidationError) {
           return sendResponse(res, 400, 'Bad Request')
         } else {
+          logger.error('[API/monitors] Error creating monitor:')
           logger.error(error)
           return sendResponse(res, 500, 'Internal Server Error')
         }
@@ -86,6 +84,7 @@ export default [
         } else if (error instanceof PrismaClientValidationError) {
           return sendResponse(res, 400, 'Bad Request')
         } else {
+          logger.error('[API/monitors] Error updating monitor:')
           logger.error(error)
           return sendResponse(res, 500, 'Internal Server Error')
         }

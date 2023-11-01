@@ -1,10 +1,7 @@
 import { Monitor as M, MonitorHistory } from '@prisma/client'
-import { prisma } from '../backend'
+import { logger, prisma } from '../backend'
 import { monitoringEmitter } from '../monitoring/monitoring'
 import MonitoringHistory from './MonitoringHistory'
-import { createLogger } from '../logger'
-
-const logger = createLogger('monitor', 'debug')
 
 export default class MonitoringMonitor implements M {
   id: number
@@ -32,7 +29,7 @@ export default class MonitoringMonitor implements M {
     this.updatedAt = monitor.updatedAt
 
     logger.debug(
-      '(#%s) Created new monitor %s of type %s',
+      '[monitoring] (#%s) Created new monitor %s of type %s',
       this.id,
       this.name,
       this.type
@@ -57,7 +54,13 @@ export default class MonitoringMonitor implements M {
    */
   async check() {
     const history = await this.checkLogic()
-    logger.debug('(#%s) Url: %s    Ping: %s', this.id, this.url, history.ping)
+    logger.debug(
+      '[monitoring] (#%s) Url: %s    Ping: %s     Status: %s',
+      this.id,
+      this.url,
+      history.ping,
+      history.status
+    )
     this.cachedLastHistory = prisma.monitorHistory.create({
       data: history.data,
     })
@@ -82,7 +85,6 @@ export default class MonitoringMonitor implements M {
   }
 
   private fetchLastHistory(): Promise<MonitorHistory | null> {
-    logger.debug('(#%s) Fetching last history', this.id)
     return prisma.monitorHistory.findFirst({
       where: {
         monitorId: this.id,
