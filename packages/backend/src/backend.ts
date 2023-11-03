@@ -4,6 +4,7 @@ import routeIndex from './routeIndex'
 import { sendResponse } from './helpers/response'
 import { PrismaClient } from '@prisma/client'
 import { initMonitoring } from './monitoring/monitoring'
+import { authMiddleware } from './auth/middleware'
 
 const app = express()
 const port = process.env.BACKEND_PORT || 3000
@@ -20,6 +21,7 @@ const prisma = new PrismaClient()
 
 // Middlewares
 app.use(express.json())
+app.use(authMiddleware)
 
 app.get('/', (_req, res) => {
   sendResponse(res, 200, packageJson.version)

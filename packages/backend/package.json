@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "license": "Apache-2.0",
   "scripts": {
-    "start": "node dist/backend.js",
-    "dev": "concurrently \"tsc -w\" \"nodemon dist/backend.js\"",
+    "start": "node -r dotenv/config dist/backend.js dotenv_config_path=../../.env ",
+    "dev": "concurrently \"tsc -w\" \"nodemon -r dotenv/config dist/backend.js dotenv_config_path=../../.env \"",
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
     "pushdb": "prisma db push"
@@ -19,7 +19,12 @@
   },
   "dependencies": {
     "@prisma/client": "^5.5.2",
+    "@types/bcrypt": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.4",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
     "log4js": "^6.9.1"
   }
 }

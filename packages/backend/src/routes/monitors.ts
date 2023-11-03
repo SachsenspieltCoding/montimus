@@ -2,11 +2,13 @@ import { PrismaClientValidationError } from '@prisma/client/runtime/library'
 import { logger, prisma } from '../backend'
 import { sendResponse } from '../helpers/response'
 import { Route } from '../route'
+import { PermissionLevel } from '../helpers/permissions'
 
 export default [
   {
     method: 'GET',
     path: '/monitors',
+    permissionLevel: PermissionLevel.USER,
     handler: async (_req, res) => {
       const monitors = await prisma.monitor.findMany()
       const mons = await Promise.all(
@@ -21,6 +23,7 @@ export default [
   {
     method: 'POST',
     path: '/monitors',
+    permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
       try {
         const monitor = await prisma.monitor.create({
@@ -44,6 +47,7 @@ export default [
   {
     method: 'GET',
     path: '/monitors/:id',
+    permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
       const { id } = req.params
 
@@ -66,6 +70,7 @@ export default [
   {
     method: 'PATCH',
     path: '/monitors/:id',
+    permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
       const { id } = req.params
 
@@ -94,6 +99,7 @@ export default [
   {
     method: 'DELETE',
     path: '/monitors/:id',
+    permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
       const { id } = req.params
 
