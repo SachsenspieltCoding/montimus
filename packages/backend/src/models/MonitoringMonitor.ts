@@ -13,6 +13,7 @@ export default class MonitoringMonitor implements M {
   createdAt: Date
   updatedAt: Date
   parameters_json: string
+  ownerId: number | null
 
   private cachedLastHistory: Promise<MonitorHistory | null> =
     Promise.resolve(null)
@@ -27,6 +28,7 @@ export default class MonitoringMonitor implements M {
     this.parameters_json = monitor.parameters_json
     this.createdAt = monitor.createdAt
     this.updatedAt = monitor.updatedAt
+    this.ownerId = monitor.ownerId
 
     logger.debug(
       '[monitoring] (#%s) Created new monitor %s of type %s',
