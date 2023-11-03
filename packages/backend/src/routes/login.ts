@@ -1,36 +1,36 @@
-import { sendResponse } from '../helpers/response'
-import { Route } from '../route'
-import { prisma } from '../backend'
-import { comparePassword } from '../auth/hash'
-import { createUserToken } from '../auth/jwt'
-import { PermissionLevel } from '../helpers/permissions'
+import { comparePassword } from "../auth/hash";
+import { createUserToken } from "../auth/jwt";
+import { prisma } from "../backend";
+import { PermissionLevel } from "../helpers/permissions";
+import { sendResponse } from "../helpers/response";
+import { Route } from "../route";
 
 export default {
-  path: '/login',
-  method: 'POST',
+  path: "/login",
+  method: "POST",
   permissionLevel: PermissionLevel.NONE,
   async handler(req, res) {
-    const { username, password } = req.body
+    const { username, password } = req.body;
 
     if (!username || !password) {
-      sendResponse(res, 400, 'Username and password are required')
-      return
+      sendResponse(res, 400, "Username and password are required");
+      return;
     }
 
     const user = await prisma.user.findUnique({
       where: { username },
-    })
+    });
 
     if (!user) {
-      sendResponse(res, 401, 'Invalid username or password')
-      return
+      sendResponse(res, 401, "Invalid username or password");
+      return;
     }
 
-    const passwordMatch = comparePassword(password, user.password)
+    const passwordMatch = comparePassword(password, user.password);
 
     if (!passwordMatch) {
-      sendResponse(res, 401, 'Invalid username or password')
-      return
+      sendResponse(res, 401, "Invalid username or password");
+      return;
     }
 
     // const token = createUserToken(user)
@@ -38,10 +38,10 @@ export default {
       data: {
         user: { connect: { id: user.id } },
         jwt: createUserToken(user),
-        name: `${req.ip} - ${req.headers['user-agent']}`,
+        name: `${req.ip} - ${req.headers["user-agent"]}`,
       },
-    })
+    });
 
-    sendResponse(res, 200, 'Login successful', session)
+    sendResponse(res, 200, "Login successful", session);
   },
-} as Route
+} as Route;

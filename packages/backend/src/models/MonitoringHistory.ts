@@ -1,4 +1,4 @@
-import MonitoringMonitor from './MonitoringMonitor'
+import MonitoringMonitor from "./MonitoringMonitor";
 
 export enum MonitoringHistoryStatus {
   UNKNOWN = -1,
@@ -7,21 +7,21 @@ export enum MonitoringHistoryStatus {
 }
 
 export default class MonitoringHistory {
-  monitor: MonitoringMonitor
-  status: MonitoringHistoryStatus
-  createdAt: Date
-  ping: number | null
-  info: {}
+  monitor: MonitoringMonitor;
+  status: MonitoringHistoryStatus;
+  createdAt: Date;
+  ping: number | null;
+  info: {};
 
   constructor(
     monitor: MonitoringMonitor,
-    options: { status: number; info?: {}; ping?: number }
+    options: { status: number; info?: {}; ping?: number },
   ) {
-    this.monitor = monitor
-    this.status = options.status
-    this.createdAt = new Date()
-    this.ping = options.ping || null
-    this.info = options.info || {}
+    this.monitor = monitor;
+    this.status = options.status;
+    this.createdAt = new Date();
+    this.ping = options.ping || null;
+    this.info = options.info || {};
   }
 
   get data() {
@@ -31,6 +31,6 @@ export default class MonitoringHistory {
       createdAt: this.createdAt,
       ping: this.ping,
       info_json: JSON.stringify(this.info),
-    }
+    };
   }
 }

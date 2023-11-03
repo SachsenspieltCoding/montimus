@@ -1,7 +1,7 @@
-import { User } from '@prisma/client'
-import jwt from 'jsonwebtoken'
+import { User } from "@prisma/client";
+import jwt from "jsonwebtoken";
 
-const secret = process.env.JWT_SECRET
+const secret = process.env.JWT_SECRET;
 
 /**
  * Create a JWT token for a user
@@ -10,10 +10,10 @@ const secret = process.env.JWT_SECRET
  */
 export function createUserToken(user: User) {
   if (!secret) {
-    throw new Error('JWT secret not set')
+    throw new Error("JWT secret not set");
   }
 
-  return jwt.sign({ id: user.id }, secret)
+  return jwt.sign({ id: user.id }, secret);
 }
 
 /**
@@ -24,11 +24,11 @@ export function createUserToken(user: User) {
  */
 export function verifyUserToken(
   token: string,
-  callback: (err: any, decoded: any) => void
+  callback: (err: any, decoded: any) => void,
 ) {
   if (!secret) {
-    throw new Error('JWT secret not set')
+    throw new Error("JWT secret not set");
   }
 
-  return jwt.verify(token, secret, callback)
+  return jwt.verify(token, secret, callback);
 }
