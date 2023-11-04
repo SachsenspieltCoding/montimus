@@ -1,3 +1,6 @@
+# OUTDATED: This file is outdated and should be updated to match the current API
+# TODO: Update this file to match the current API
+
 openapi: "3.0.2"
 info:
   title: Montimus API

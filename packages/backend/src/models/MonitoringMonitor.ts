@@ -1,7 +1,10 @@
 import { Monitor as M, MonitorHistory } from "@prisma/client";
 import { logger, prisma } from "../backend";
-import { monitoringEmitter } from "../monitoring/monitoring";
 import MonitoringHistory from "./MonitoringHistory";
+
+export enum MonitorType {
+  HTTP = "http",
+}
 
 export default class MonitoringMonitor implements M {
   id: number;
@@ -29,25 +32,6 @@ export default class MonitoringMonitor implements M {
     this.createdAt = monitor.createdAt;
     this.updatedAt = monitor.updatedAt;
     this.ownerId = monitor.ownerId;
-
-    logger.debug(
-      "[monitoring] (#%s) Created new monitor %s of type %s",
-      this.id,
-      this.name,
-      this.type,
-    );
-
-    monitoringEmitter.on("tick", async () => {
-      const lastHistory = await this.getLastHistory();
-      if (!lastHistory) {
-        this.check();
-        return;
-      }
-
-      if (lastHistory.createdAt.getTime() + this.interval * 1000 < Date.now()) {
-        this.check();
-      }
-    });
   }
 
   /**
@@ -55,6 +39,15 @@ export default class MonitoringMonitor implements M {
    * @returns void
    */
   async check() {
+    const lastHistory = await this.getLastHistory();
+
+    if (
+      lastHistory &&
+      lastHistory.createdAt.getTime() + this.interval * 1000 > Date.now() // If the last history is not older than the interval, we don't need to check
+    ) {
+      return;
+    }
+
     const history = await this.checkLogic();
     logger.debug(
       "[monitoring] (#%s) Url: %s    Ping: %s     Status: %s",
@@ -76,6 +69,26 @@ export default class MonitoringMonitor implements M {
    */
   async checkLogic(): Promise<MonitoringHistory> {
     throw new Error("Method not implemented.");
+  }
+
+  /**
+   * Converts the monitor to a JSON object
+   * @returns object
+   */
+  async toJSON(): Promise<object> {
+    return {
+      id: this.id,
+      name: this.name,
+      description: this.description,
+      type: this.type,
+      url: this.url,
+      interval: this.interval,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+      parameters_json: this.parameters_json,
+      ownerId: this.ownerId,
+      lastHistory: await this.getLastHistory(),
+    };
   }
 
   private async getLastHistory(): Promise<MonitorHistory | null> {
