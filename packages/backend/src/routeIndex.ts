@@ -50,6 +50,10 @@ export function getRoutes(): Route[] {
   return routes;
 }
 
-export function getRoute(path: string): Route | undefined {
-  return routes.find((route) => route.path === path);
+export function getRoute(path: string, method: string): Route | undefined {
+  return routes.find(
+    (route) =>
+      (route.path === path || `${route.path}/` === path) &&
+      route.method.toLowerCase() === method.toLowerCase(),
+  );
 }

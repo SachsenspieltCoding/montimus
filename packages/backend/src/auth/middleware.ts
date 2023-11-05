@@ -10,9 +10,10 @@ export function authMiddleware(
   res: Response,
   next: NextFunction,
 ) {
-  const route = getRoute(req.path);
+  const route = getRoute(req.path, req.method);
 
-  if (!route) return next();
+  if (!route) return sendResponse(res, 404, "Not Found");
+
   if (
     route.permissionLevel !== undefined &&
     route.permissionLevel === PermissionLevel.NONE

@@ -1,4 +1,5 @@
 import { PrismaClientValidationError } from "@prisma/client/runtime/library";
+import { z } from "zod";
 import { logger, prisma } from "../backend";
 import { PermissionLevel } from "../helpers/permissions";
 import { sendResponse } from "../helpers/response";
@@ -12,12 +13,33 @@ import {
 } from "../monitoring/monitoring";
 import { Route } from "../route";
 
+const monitorSchema = z.object({
+  name: z.string().min(1).max(255),
+  description: z.string().optional(),
+  type: z.nativeEnum(MonitorType),
+  url: z.string().min(1).max(2048),
+  interval: z.number().min(1),
+  parameters_json: z.string().optional(),
+});
+
 export default [
   {
     method: "GET",
     path: "/monitors",
     permissionLevel: PermissionLevel.USER,
-    handler: async (_req, res) => {
+    handler: async (req, res) => {
+      const { id } = req.query;
+
+      if (id) {
+        const monitor = getMonitor(Number(id));
+
+        if (!monitor) {
+          return sendResponse(res, 404, "Monitor not found");
+        }
+
+        return sendResponse(res, 200, undefined, await monitor.toJSON());
+      }
+
       return sendResponse(
         res,
         200,
@@ -32,16 +54,22 @@ export default [
     permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
       try {
-        if (!Object.values(MonitorType).includes(req.body.type)) {
-          return sendResponse(res, 400, "Bad Request (Invalid type)");
-        }
+        const parsedBody = monitorSchema.safeParse(req.body);
 
-        if (req.body.interval < 5) {
-          return sendResponse(res, 400, "Bad Request (Invalid interval)");
+        if (!parsedBody.success) {
+          logger.debug(parsedBody.error.issues[0].message);
+          return sendResponse(
+            res,
+            400,
+            `Bad Request (${parsedBody.error.issues[0].path}: ${parsedBody.error.issues[0].message})`,
+          );
         }
 
         const monitor = await prisma.monitor.create({
-          data: { ...req.body, ownerId: res.locals.user && res.locals.user.id },
+          data: {
+            ...parsedBody.data,
+            ownerId: res.locals.user && res.locals.user.id,
+          },
         });
 
         if (monitor) {
@@ -64,34 +92,29 @@ export default [
     },
   } as Route,
   {
-    method: "GET",
-    path: "/monitors/:id",
-    permissionLevel: PermissionLevel.USER,
-    handler: async (req, res) => {
-      const { id } = req.params;
-
-      const monitor = getMonitor(Number(id));
-
-      if (!monitor) {
-        return sendResponse(res, 404, "Monitor not found");
-      }
-
-      return sendResponse(res, 200, undefined, await monitor.toJSON());
-    },
-  } as Route,
-  {
     method: "PATCH",
-    path: "/monitors/:id",
+    path: "/monitors",
     permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
-      const { id } = req.params;
+      const { id } = req.query;
 
       try {
+        const parsedBody = monitorSchema.partial().safeParse(req.body);
+
+        if (!parsedBody.success) {
+          logger.debug(parsedBody.error.issues[0].message);
+          return sendResponse(
+            res,
+            400,
+            `Bad Request (${parsedBody.error.issues[0].path}: ${parsedBody.error.issues[0].message})`,
+          );
+        }
+
         const monitor = await prisma.monitor.update({
           where: {
             id: Number(id),
           },
-          data: req.body,
+          data: parsedBody.data,
         });
 
         updatePrismaMonitor(monitor);
@@ -111,10 +134,10 @@ export default [
   } as Route,
   {
     method: "DELETE",
-    path: "/monitors/:id",
+    path: "/monitors",
     permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
-      const { id } = req.params;
+      const { id } = req.query;
 
       try {
         await prisma.monitorHistory.deleteMany({
