@@ -39,7 +39,7 @@ export function getMonitor(id: number): MonitoringMonitor | undefined {
 
 export async function pushMonitor(monitor: MonitoringMonitor) {
   monitors.push(monitor);
-  logger.debug(
+  logger.info(
     "[monitoring] (#%s) Pushed new monitor %s of type %s",
     monitor.id,
     monitor.name,
@@ -54,7 +54,7 @@ export async function deleteMonitor(monitor: MonitoringMonitor) {
 
   monitors.splice(index, 1);
 
-  logger.debug(
+  logger.info(
     "[monitoring] (#%s) Deleted monitor %s of type %s",
     monitor.id,
     monitor.name,
@@ -69,7 +69,7 @@ export async function updateMonitor(monitor: MonitoringMonitor) {
 
   monitors[index] = monitor;
 
-  logger.debug(
+  logger.info(
     "[monitoring] (#%s) Updated monitor %s of type %s",
     monitor.id,
     monitor.name,
