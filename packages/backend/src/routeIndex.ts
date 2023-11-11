@@ -2,7 +2,8 @@ import express, { Express } from "express";
 import { Route } from "./route";
 import helloworld from "./routes/helloworld";
 import login from "./routes/login";
-import monitors from "./routes/monitors";
+import history from "./routes/monitoring/history";
+import monitors from "./routes/monitoring/monitors";
 import register from "./routes/register";
 
 const router = express.Router();
@@ -13,6 +14,7 @@ export default (app: Express) => {
 
   // Monitoring
   registerRoute(...monitors);
+  registerRoute(...history);
 
   // Authentication
   registerRoute(...[register, login]);

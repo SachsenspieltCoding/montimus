@@ -1,17 +1,17 @@
 import { PrismaClientValidationError } from "@prisma/client/runtime/library";
 import { z } from "zod";
-import { logger, prisma } from "../backend";
-import { PermissionLevel } from "../helpers/permissions";
-import { sendResponse } from "../helpers/response";
-import { MonitorType } from "../models/MonitoringMonitor";
+import { logger, prisma } from "../../backend";
+import { PermissionLevel } from "../../helpers/permissions";
+import { sendResponse } from "../../helpers/response";
+import { MonitorType } from "../../models/MonitoringMonitor";
 import {
   deletePrismaMonitor,
   getMonitor,
   getMonitors,
   pushPrismaMonitor,
   updatePrismaMonitor,
-} from "../monitoring/monitoring";
-import { Route } from "../route";
+} from "../../monitoring/monitoring";
+import { Route } from "../../route";
 
 const monitorSchema = z.object({
   name: z.string().min(1).max(255),
@@ -25,7 +25,7 @@ const monitorSchema = z.object({
 export default [
   {
     method: "GET",
-    path: "/monitors",
+    path: "/monitoring/monitors",
     permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
       const { id } = req.query;
@@ -50,7 +50,7 @@ export default [
   } as Route,
   {
     method: "POST",
-    path: "/monitors",
+    path: "/monitoring/monitors",
     permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
       try {
@@ -93,7 +93,7 @@ export default [
   } as Route,
   {
     method: "PATCH",
-    path: "/monitors",
+    path: "/monitoring/monitors",
     permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
       const { id } = req.query;
@@ -134,7 +134,7 @@ export default [
   } as Route,
   {
     method: "DELETE",
-    path: "/monitors",
+    path: "/monitoring/monitors",
     permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
       const { id } = req.query;
