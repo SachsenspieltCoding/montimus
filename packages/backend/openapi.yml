@@ -1,13 +1,10 @@
-# OUTDATED: This file is outdated and should be updated to match the current API
-# TODO: Update this file to match the current API
-
-openapi: "3.0.2"
+openapi: 3.0.2
 info:
   title: Montimus API
-  version: "0.0.0"
+  version: 0.1.0
   license:
     name: Apache 2.0
-    url: "https://www.apache.org/licenses/LICENSE-2.0.html"
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
 tags:
   - name: General
     description: General endpoints
@@ -19,7 +16,7 @@ paths:
       tags:
         - General
       responses:
-        "200":
+        '200':
           description: Returns the API version
           content:
             application/json:
@@ -33,13 +30,13 @@ paths:
                     description: API version
                 example:
                   status: 200
-                  message: "1.0.0"
+                  message: 1.0.0
   /helloworld:
     get:
       tags:
         - General
       responses:
-        "200":
+        '200':
           description: Returns a hello world message
           content:
             application/json:
@@ -53,13 +50,13 @@ paths:
                     description: Hello world message
                 example:
                   status: 200
-                  message: "Hello world!"
-  /monitors: # TODO: Add lastHistory to monitors when getting
+                  message: Hello world!
+  /monitors:
     get:
       tags:
         - Monitors
       responses:
-        "200":
+        '200':
           description: Returns an array of all monitors
           content:
             application/json:
@@ -72,29 +69,23 @@ paths:
                     type: array
                     description: List of monitors
                     items:
-                      $ref: "#/components/schemas/Monitor"
+                      $ref: '#/components/schemas/Monitor'
                 example:
                   status: 200
                   data:
-                    [
-                      {
-                        id: 1,
-                        name: "Google",
-                        description: "Google website",
-                        url: "https://google.com",
-                        interval: 60,
-                        createdAt: "2021-01-01T00:00:00.000Z",
-                        updatedAt: "2021-01-01T00:00:00.000Z",
-                      },
-                      {
-                        id: 2,
-                        name: "Facebook",
-                        url: "https://facebook.com",
-                        interval: 120,
-                        createdAt: "2021-01-01T00:00:00.000Z",
-                        updatedAt: "2021-01-01T00:00:00.000Z",
-                      },
-                    ]
+                    - id: 1
+                      name: Google
+                      description: Google website
+                      url: https://google.com
+                      interval: 60
+                      createdAt: '2021-01-01T00:00:00.000Z'
+                      updatedAt: '2021-01-01T00:00:00.000Z'
+                    - id: 2
+                      name: Facebook
+                      url: https://facebook.com
+                      interval: 120
+                      createdAt: '2021-01-01T00:00:00.000Z'
+                      updatedAt: '2021-01-01T00:00:00.000Z'
     post:
       tags:
         - Monitors
@@ -103,14 +94,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Monitor"
+              $ref: '#/components/schemas/Monitor'
             example:
-              name: "Google"
-              description: "Google website"
-              url: "https://google.com"
+              name: Google
+              description: Google website
+              url: https://google.com
               interval: 60
       responses:
-        "201":
+        '201':
           description: Returns the created monitor
           content:
             application/json:
@@ -120,18 +111,18 @@ paths:
                     type: integer
                     description: HTTP status code
                   data:
-                    $ref: "#/components/schemas/Monitor"
+                    $ref: '#/components/schemas/Monitor'
                 example:
                   status: 201
                   data:
                     id: 1
-                    name: "Google"
-                    description: "Google website"
-                    url: "https://google.com"
+                    name: Google
+                    description: Google website
+                    url: https://google.com
                     interval: 60
-                    createdAt: "2021-01-01T00:00:00.000Z"
-                    updatedAt: "2021-01-01T00:00:00.000Z"
-        "400":
+                    createdAt: '2021-01-01T00:00:00.000Z'
+                    updatedAt: '2021-01-01T00:00:00.000Z'
+        '400':
           description: The provided body is invalid
           content:
             application/json:
@@ -145,8 +136,8 @@ paths:
                     description: Error message
                 example:
                   status: 400
-                  message: "Bad Request"
-        "409":
+                  message: Bad Request
+        '409':
           description: A monitor with the same id already exists
           content:
             application/json:
@@ -160,7 +151,7 @@ paths:
                     description: Error message
                 example:
                   status: 409
-                  message: "Monitor already exists"
+                  message: Monitor already exists
   /monitors/{id}:
     get:
       tags:
@@ -173,7 +164,7 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
+        '200':
           description: Returns the monitor with the provided ID
           content:
             application/json:
@@ -186,13 +177,13 @@ paths:
                   status: 200
                   data:
                     id: 1
-                    name: "Google"
-                    description: "Google website"
-                    url: "https://google.com"
+                    name: Google
+                    description: Google website
+                    url: https://google.com
                     interval: 60
-                    createdAt: "2021-01-01T00:00:00.000Z"
-                    updatedAt: "2021-01-01T00:00:00.000Z"
-        "404":
+                    createdAt: '2021-01-01T00:00:00.000Z'
+                    updatedAt: '2021-01-01T00:00:00.000Z'
+        '404':
           description: The monitor with the provided ID does not exist
           content:
             application/json:
@@ -206,7 +197,7 @@ paths:
                     description: Error message
                 example:
                   status: 404
-                  message: "Monitor not found"
+                  message: Monitor not found
     patch:
       tags:
         - Monitors
@@ -222,14 +213,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Monitor"
+              $ref: '#/components/schemas/Monitor'
             example:
-              name: "Updated Google"
-              description: "Google website"
-              url: "https://google.com"
+              name: Updated Google
+              description: Google website
+              url: https://google.com
               interval: 60
       responses:
-        "200":
+        '200':
           description: Returns the updated monitor
           content:
             application/json:
@@ -239,18 +230,18 @@ paths:
                     type: integer
                     description: HTTP status code
                   data:
-                    $ref: "#/components/schemas/Monitor"
+                    $ref: '#/components/schemas/Monitor'
                 example:
                   status: 200
                   data:
                     id: 1
-                    name: "Updated Google"
-                    description: "Google website"
-                    url: "https://google.com"
+                    name: Updated Google
+                    description: Google website
+                    url: https://google.com
                     interval: 60
-                    createdAt: "2021-01-01T00:00:00.000Z"
-                    updatedAt: "2021-01-01T00:00:00.000Z"
-        "400":
+                    createdAt: '2021-01-01T00:00:00.000Z'
+                    updatedAt: '2021-01-01T00:00:00.000Z'
+        '400':
           description: The provided body is invalid
           content:
             application/json:
@@ -264,8 +255,8 @@ paths:
                     description: Error message
                 example:
                   status: 400
-                  message: "Bad Request"
-        "404":
+                  message: Bad Request
+        '404':
           description: The monitor with the provided ID does not exist
           content:
             application/json:
@@ -279,7 +270,7 @@ paths:
                     description: Error message
                 example:
                   status: 404
-                  message: "Monitor not found"
+                  message: Monitor not found
     delete:
       tags:
         - Monitors
@@ -291,7 +282,7 @@ paths:
           schema:
             type: integer
       responses:
-        "204":
+        '204':
           description: Monitor deleted successfully
           content:
             application/json:
@@ -302,7 +293,7 @@ paths:
                     description: HTTP status code
                 example:
                   status: 204
-        "404":
+        '404':
           description: The monitor with the provided ID does not exist
           content:
             application/json:
@@ -316,8 +307,7 @@ paths:
                     description: Error message
                 example:
                   status: 404
-                  message: "Monitor not found"
-
+                  message: Monitor not found
 components:
   schemas:
     Monitor:

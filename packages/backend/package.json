@@ -1,6 +1,6 @@
 {
   "name": "@montimus/backend",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "scripts": {
     "start": "node -r dotenv/config dist/backend.js dotenv_config_path=../../.env ",
