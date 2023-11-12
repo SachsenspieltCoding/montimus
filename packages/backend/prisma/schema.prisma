@@ -16,6 +16,7 @@ model Monitor {
   interval    Int     @default(60) // seconds
 
   history MonitorHistory[]
+  events  MonitorEvents[]
 
   parameters_json String @default("{}")
 
@@ -37,6 +38,21 @@ model MonitorHistory {
 
   ping      Int?
   info_json String @default("{}")
+
+  createdAt DateTime @default(now())
+
+  @@index([id, monitorId, createdAt])
+}
+
+model MonitorEvents {
+  id Int @id @default(autoincrement())
+
+  monitor   Monitor @relation(fields: [monitorId], references: [id])
+  monitorId Int
+
+  oldStatus Int
+  newStatus Int
+  message   String?
 
   createdAt DateTime @default(now())
 

@@ -18,8 +18,7 @@ export default class MonitoringMonitor implements M {
   parameters_json: string;
   ownerId: number | null;
 
-  private cachedLastHistory: Promise<MonitorHistory | null> =
-    Promise.resolve(null);
+  private cachedLastHistory: MonitorHistory | null = null;
 
   constructor(monitor: M) {
     this.id = monitor.id;
@@ -56,9 +55,34 @@ export default class MonitoringMonitor implements M {
       history.ping,
       history.status,
     );
-    this.cachedLastHistory = prisma.monitorHistory.create({
+
+    const newHistory = await prisma.monitorHistory.create({
       data: history.data,
     });
+
+    if (
+      this.cachedLastHistory &&
+      newHistory.status !== this.cachedLastHistory.status
+    ) {
+      logger.info(
+        "[monitoring] (#%s) Status changed from %s to %s",
+        this.id,
+        this.cachedLastHistory.status,
+        newHistory.status,
+      );
+
+      // TODO: Add event messages
+
+      await prisma.monitorEvents.create({
+        data: {
+          monitorId: this.id,
+          oldStatus: this.cachedLastHistory.status,
+          newStatus: newHistory.status,
+        },
+      });
+    }
+
+    this.cachedLastHistory = newHistory;
   }
 
   /**
@@ -92,8 +116,8 @@ export default class MonitoringMonitor implements M {
   }
 
   private async getLastHistory(): Promise<MonitorHistory | null> {
-    if (!(await this.cachedLastHistory)) {
-      this.cachedLastHistory = this.fetchLastHistory();
+    if (!this.cachedLastHistory) {
+      this.cachedLastHistory = await this.fetchLastHistory();
     }
 
     return this.cachedLastHistory;
