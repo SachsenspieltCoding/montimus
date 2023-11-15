@@ -1,17 +1,17 @@
-import { PrismaClientValidationError } from "@prisma/client/runtime/library";
-import { z } from "zod";
-import { logger, prisma } from "../../backend";
-import { PermissionLevel } from "../../helpers/permissions";
-import { sendResponse } from "../../helpers/response";
-import { MonitorType } from "../../models/MonitoringMonitor";
+import { PrismaClientValidationError } from '@prisma/client/runtime/library';
+import { z } from 'zod';
+import { logger, prisma } from '../../backend';
+import { PermissionLevel } from '../../helpers/permissions';
+import { sendResponse } from '../../helpers/response';
+import { MonitorType } from '../../models/MonitoringMonitor';
 import {
   deletePrismaMonitor,
   getMonitor,
   getMonitors,
   pushPrismaMonitor,
   updatePrismaMonitor,
-} from "../../monitoring/monitoring";
-import { Route } from "../../route";
+} from '../../monitoring/monitoring';
+import { Route } from '../../route';
 
 const monitorSchema = z.object({
   name: z.string().min(1).max(255),
@@ -24,8 +24,8 @@ const monitorSchema = z.object({
 
 export default [
   {
-    method: "GET",
-    path: "/monitoring/monitors",
+    method: 'GET',
+    path: '/monitoring/monitors',
     permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
       const { id } = req.query;
@@ -34,23 +34,18 @@ export default [
         const monitor = getMonitor(Number(id));
 
         if (!monitor) {
-          return sendResponse(res, 404, "Monitor not found");
+          return sendResponse(res, 404, 'Monitor not found');
         }
 
         return sendResponse(res, 200, undefined, await monitor.toJSON());
       }
 
-      return sendResponse(
-        res,
-        200,
-        undefined,
-        await Promise.all(getMonitors().map((mon) => mon.toJSON())),
-      );
+      return sendResponse(res, 200, undefined, await Promise.all(getMonitors().map((mon) => mon.toJSON())));
     },
   } as Route,
   {
-    method: "POST",
-    path: "/monitoring/monitors",
+    method: 'POST',
+    path: '/monitoring/monitors',
     permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
       try {
@@ -76,24 +71,24 @@ export default [
           pushPrismaMonitor(monitor);
           return sendResponse(res, 201, undefined, monitor);
         } else {
-          return sendResponse(res, 500, "Internal Server Error");
+          return sendResponse(res, 500, 'Internal Server Error');
         }
       } catch (error: any) {
-        if (error.code === "P2002") {
-          return sendResponse(res, 409, "Monitor already exists");
+        if (error.code === 'P2002') {
+          return sendResponse(res, 409, 'Monitor already exists');
         } else if (error instanceof PrismaClientValidationError) {
-          return sendResponse(res, 400, "Bad Request");
+          return sendResponse(res, 400, 'Bad Request');
         } else {
-          logger.error("[API/monitors] Error creating monitor:");
+          logger.error('[API/monitors] Error creating monitor:');
           logger.error(error);
-          return sendResponse(res, 500, "Internal Server Error");
+          return sendResponse(res, 500, 'Internal Server Error');
         }
       }
     },
   } as Route,
   {
-    method: "PATCH",
-    path: "/monitoring/monitors",
+    method: 'PATCH',
+    path: '/monitoring/monitors',
     permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
       const { id } = req.query;
@@ -120,21 +115,21 @@ export default [
         updatePrismaMonitor(monitor);
         return sendResponse(res, 200, undefined, monitor);
       } catch (error: any) {
-        if (error.code === "P2025") {
-          return sendResponse(res, 404, "Monitor not found");
+        if (error.code === 'P2025') {
+          return sendResponse(res, 404, 'Monitor not found');
         } else if (error instanceof PrismaClientValidationError) {
-          return sendResponse(res, 400, "Bad Request");
+          return sendResponse(res, 400, 'Bad Request');
         } else {
-          logger.error("[API/monitors] Error updating monitor:");
+          logger.error('[API/monitors] Error updating monitor:');
           logger.error(error);
-          return sendResponse(res, 500, "Internal Server Error");
+          return sendResponse(res, 500, 'Internal Server Error');
         }
       }
     },
   } as Route,
   {
-    method: "DELETE",
-    path: "/monitoring/monitors",
+    method: 'DELETE',
+    path: '/monitoring/monitors',
     permissionLevel: PermissionLevel.USER,
     handler: async (req, res) => {
       const { id } = req.query;
@@ -155,14 +150,14 @@ export default [
         deletePrismaMonitor(mon);
         return sendResponse(res, 204);
       } catch (error: any) {
-        if (error.code === "P2025") {
-          return sendResponse(res, 404, "Monitor not found");
+        if (error.code === 'P2025') {
+          return sendResponse(res, 404, 'Monitor not found');
         } else if (error instanceof PrismaClientValidationError) {
-          return sendResponse(res, 400, "Bad Request");
+          return sendResponse(res, 400, 'Bad Request');
         } else {
-          logger.error("[API/monitors] Error deleting monitor:");
+          logger.error('[API/monitors] Error deleting monitor:');
           logger.error(error);
-          return sendResponse(res, 500, "Internal Server Error");
+          return sendResponse(res, 500, 'Internal Server Error');
         }
       }
     },

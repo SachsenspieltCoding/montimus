@@ -1,18 +1,18 @@
-import { hashPassword } from "../auth/hash";
-import { prisma } from "../backend";
-import { PermissionLevel } from "../helpers/permissions";
-import { sendResponse } from "../helpers/response";
-import { Route } from "../route";
+import { hashPassword } from '../auth/hash';
+import { prisma } from '../backend';
+import { PermissionLevel } from '../helpers/permissions';
+import { sendResponse } from '../helpers/response';
+import { Route } from '../route';
 
 export default {
-  path: "/register",
-  method: "POST",
+  path: '/register',
+  method: 'POST',
   permissionLevel: PermissionLevel.NONE,
   async handler(req, res) {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      sendResponse(res, 400, "Username and password are required");
+      sendResponse(res, 400, 'Username and password are required');
       return;
     }
 
@@ -21,7 +21,7 @@ export default {
     });
 
     if (user) {
-      sendResponse(res, 401, "Username already exists");
+      sendResponse(res, 401, 'Username already exists');
       return;
     }
 
@@ -34,8 +34,8 @@ export default {
       },
     });
 
-    newUser.password = "";
+    newUser.password = '';
 
-    sendResponse(res, 200, "Registration successful", newUser);
+    sendResponse(res, 200, 'Registration successful', newUser);
   },
 } as Route;

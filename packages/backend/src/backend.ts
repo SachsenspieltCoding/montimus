@@ -1,7 +1,7 @@
-import { Logger, ValidationPipe } from "@nestjs/common";
-import { NestFactory } from "@nestjs/core";
-import helmet from "helmet";
-import { AppModule } from "./app.module";
+import { Logger, ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
+import { AppModule } from './app.module';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -9,13 +9,13 @@ async function bootstrap(): Promise<void> {
   app.useGlobalPipes(new ValidationPipe({}));
   app.enableCors({
     credentials: true,
-    exposedHeaders: ["Retry-After"],
+    exposedHeaders: ['Retry-After'],
   });
 
   const port = process.env.BACKEND_PORT || 3001;
   await app.listen(port);
 
-  const logger = new Logger("Startup");
+  const logger = new Logger('Startup');
   logger.log(`Application listening on port ${port}`);
 }
 

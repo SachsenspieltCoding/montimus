@@ -1,41 +1,34 @@
-import { NextFunction, Request, Response } from "express";
-import { prisma } from "../backend";
-import { PermissionLevel } from "../helpers/permissions";
-import { sendResponse } from "../helpers/response";
-import { getRoute } from "../routeIndex";
-import { verifyUserToken } from "./jwt";
+import { NextFunction, Request, Response } from 'express';
+import { prisma } from '../backend';
+import { PermissionLevel } from '../helpers/permissions';
+import { sendResponse } from '../helpers/response';
+import { getRoute } from '../routeIndex';
+import { verifyUserToken } from './jwt';
 
-export function authMiddleware(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export function authMiddleware(req: Request, res: Response, next: NextFunction) {
   const route = getRoute(req.path, req.method);
 
-  if (!route) return sendResponse(res, 404, "Not Found");
+  if (!route) return sendResponse(res, 404, 'Not Found');
 
-  if (
-    route.permissionLevel !== undefined &&
-    route.permissionLevel === PermissionLevel.NONE
-  ) {
+  if (route.permissionLevel !== undefined && route.permissionLevel === PermissionLevel.NONE) {
     return next();
   }
 
   const authHeader = req.headers.authorization;
   if (!authHeader) {
-    sendResponse(res, 401, "Unauthorized");
+    sendResponse(res, 401, 'Unauthorized');
     return;
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.split(' ')[1];
   if (!token) {
-    sendResponse(res, 401, "Unauthorized");
+    sendResponse(res, 401, 'Unauthorized');
     return;
   }
 
   verifyUserToken(token, async (err, decoded) => {
     if (err) {
-      sendResponse(res, 401, "Unauthorized");
+      sendResponse(res, 401, 'Unauthorized');
       return;
     }
 
@@ -44,15 +37,12 @@ export function authMiddleware(
     });
 
     if (!user) {
-      sendResponse(res, 401, "Unauthorized");
+      sendResponse(res, 401, 'Unauthorized');
       return;
     }
 
-    if (
-      route.permissionLevel !== undefined &&
-      route.permissionLevel > user.permission
-    ) {
-      sendResponse(res, 403, "Forbidden");
+    if (route.permissionLevel !== undefined && route.permissionLevel > user.permission) {
+      sendResponse(res, 403, 'Forbidden');
       return;
     }
 

@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 
 /** The main module. */
 @Module({

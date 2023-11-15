@@ -1,19 +1,19 @@
-import { comparePassword } from "../auth/hash";
-import { createUserToken } from "../auth/jwt";
-import { prisma } from "../backend";
-import { PermissionLevel } from "../helpers/permissions";
-import { sendResponse } from "../helpers/response";
-import { Route } from "../route";
+import { comparePassword } from '../auth/hash';
+import { createUserToken } from '../auth/jwt';
+import { prisma } from '../backend';
+import { PermissionLevel } from '../helpers/permissions';
+import { sendResponse } from '../helpers/response';
+import { Route } from '../route';
 
 export default {
-  path: "/login",
-  method: "POST",
+  path: '/login',
+  method: 'POST',
   permissionLevel: PermissionLevel.NONE,
   async handler(req, res) {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      sendResponse(res, 400, "Username and password are required");
+      sendResponse(res, 400, 'Username and password are required');
       return;
     }
 
@@ -22,14 +22,14 @@ export default {
     });
 
     if (!user) {
-      sendResponse(res, 401, "Invalid username or password");
+      sendResponse(res, 401, 'Invalid username or password');
       return;
     }
 
     const passwordMatch = comparePassword(password, user.password);
 
     if (!passwordMatch) {
-      sendResponse(res, 401, "Invalid username or password");
+      sendResponse(res, 401, 'Invalid username or password');
       return;
     }
 
@@ -38,10 +38,10 @@ export default {
       data: {
         user: { connect: { id: user.id } },
         jwt: createUserToken(user),
-        name: `${req.ip} - ${req.headers["user-agent"]}`,
+        name: `${req.ip} - ${req.headers['user-agent']}`,
       },
     });
 
-    sendResponse(res, 200, "Login successful", session);
+    sendResponse(res, 200, 'Login successful', session);
   },
 } as Route;

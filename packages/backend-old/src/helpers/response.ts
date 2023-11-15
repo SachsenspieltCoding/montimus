@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response } from 'express';
 
 /**
  *
@@ -7,12 +7,7 @@ import { Response } from "express";
  * @param message The message to send (optional)
  * @param data The data to send (optional)
  */
-export function sendResponse(
-  res: Response,
-  status = 200,
-  message?: string,
-  data?: any,
-) {
+export function sendResponse(res: Response, status = 200, message?: string, data?: any) {
   res.status(status).json({
     status,
     message,

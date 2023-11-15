@@ -1,7 +1,7 @@
-import { Monitor } from "@prisma/client";
-import { logger, prisma } from "../backend";
-import MonitoringMonitor, { MonitorType } from "../models/MonitoringMonitor";
-import HttpMonitor from "./types/HttpMonitor";
+import { Monitor } from '@prisma/client';
+import { logger, prisma } from '../backend';
+import MonitoringMonitor, { MonitorType } from '../models/MonitoringMonitor';
+import HttpMonitor from './types/HttpMonitor';
 
 const monitors: MonitoringMonitor[] = [];
 
@@ -12,7 +12,7 @@ export async function initMonitoring() {
     try {
       monitors.push(fromPrismaMonitor(mon));
     } catch (error) {
-      logger.warn("[monitoring] Ignoring monitor %s", mon.id);
+      logger.warn('[monitoring] Ignoring monitor %s', mon.id);
     }
   });
 
@@ -39,12 +39,7 @@ export function getMonitor(id: number): MonitoringMonitor | undefined {
 
 export async function pushMonitor(monitor: MonitoringMonitor) {
   monitors.push(monitor);
-  logger.info(
-    "[monitoring] (#%s) Pushed new monitor %s of type %s",
-    monitor.id,
-    monitor.name,
-    monitor.type,
-  );
+  logger.info('[monitoring] (#%s) Pushed new monitor %s of type %s', monitor.id, monitor.name, monitor.type);
 }
 
 export async function deleteMonitor(monitor: MonitoringMonitor) {
@@ -54,12 +49,7 @@ export async function deleteMonitor(monitor: MonitoringMonitor) {
 
   monitors.splice(index, 1);
 
-  logger.info(
-    "[monitoring] (#%s) Deleted monitor %s of type %s",
-    monitor.id,
-    monitor.name,
-    monitor.type,
-  );
+  logger.info('[monitoring] (#%s) Deleted monitor %s of type %s', monitor.id, monitor.name, monitor.type);
 }
 
 export async function updateMonitor(monitor: MonitoringMonitor) {
@@ -69,12 +59,7 @@ export async function updateMonitor(monitor: MonitoringMonitor) {
 
   monitors[index] = monitor;
 
-  logger.info(
-    "[monitoring] (#%s) Updated monitor %s of type %s",
-    monitor.id,
-    monitor.name,
-    monitor.type,
-  );
+  logger.info('[monitoring] (#%s) Updated monitor %s of type %s', monitor.id, monitor.name, monitor.type);
 }
 
 export async function pushPrismaMonitor(monitor: Monitor) {

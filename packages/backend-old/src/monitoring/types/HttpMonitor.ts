@@ -1,8 +1,6 @@
-import { Monitor } from "@prisma/client";
-import MonitoringHistory, {
-  MonitoringHistoryStatus,
-} from "../../models/MonitoringHistory";
-import MonitoringMonitor from "../../models/MonitoringMonitor";
+import { Monitor } from '@prisma/client';
+import MonitoringHistory, { MonitoringHistoryStatus } from '../../models/MonitoringHistory';
+import MonitoringMonitor from '../../models/MonitoringMonitor';
 
 export default class HttpMonitor extends MonitoringMonitor {
   constructor(monitor: Monitor) {
@@ -17,10 +15,7 @@ export default class HttpMonitor extends MonitoringMonitor {
         const end = Date.now();
         resolve(
           new MonitoringHistory(this, {
-            status:
-              fetched.status === 200
-                ? MonitoringHistoryStatus.UP
-                : MonitoringHistoryStatus.DOWN,
+            status: fetched.status === 200 ? MonitoringHistoryStatus.UP : MonitoringHistoryStatus.DOWN,
             ping: end - start,
             info: {
               status: fetched.status,

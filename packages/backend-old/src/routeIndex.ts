@@ -1,10 +1,10 @@
-import express, { Express } from "express";
-import { Route } from "./route";
-import helloworld from "./routes/helloworld";
-import login from "./routes/login";
-import history from "./routes/monitoring/history";
-import monitors from "./routes/monitoring/monitors";
-import register from "./routes/register";
+import express, { Express } from 'express';
+import { Route } from './route';
+import helloworld from './routes/helloworld';
+import login from './routes/login';
+import history from './routes/monitoring/history';
+import monitors from './routes/monitoring/monitors';
+import register from './routes/register';
 
 const router = express.Router();
 const routes: Route[] = [];
@@ -27,19 +27,19 @@ function registerRoute(...paramRoutes: Route[]) {
 
   for (const route of paramRoutes) {
     switch (route.method) {
-      case "GET":
+      case 'GET':
         router.get(route.path, route.handler);
         break;
-      case "POST":
+      case 'POST':
         router.post(route.path, route.handler);
         break;
-      case "PUT":
+      case 'PUT':
         router.put(route.path, route.handler);
         break;
-      case "DELETE":
+      case 'DELETE':
         router.delete(route.path, route.handler);
         break;
-      case "PATCH":
+      case 'PATCH':
         router.patch(route.path, route.handler);
         break;
       default:
@@ -55,7 +55,6 @@ export function getRoutes(): Route[] {
 export function getRoute(path: string, method: string): Route | undefined {
   return routes.find(
     (route) =>
-      (route.path === path || `${route.path}/` === path) &&
-      route.method.toLowerCase() === method.toLowerCase(),
+      (route.path === path || `${route.path}/` === path) && route.method.toLowerCase() === method.toLowerCase(),
   );
 }

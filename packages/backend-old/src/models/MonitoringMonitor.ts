@@ -1,9 +1,9 @@
-import { Monitor as M, MonitorHistory } from "@prisma/client";
-import { logger, prisma } from "../backend";
-import MonitoringHistory from "./MonitoringHistory";
+import { Monitor as M, MonitorHistory } from '@prisma/client';
+import { logger, prisma } from '../backend';
+import MonitoringHistory from './MonitoringHistory';
 
 export enum MonitorType {
-  HTTP = "http",
+  HTTP = 'http',
 }
 
 export default class MonitoringMonitor implements M {
@@ -49,7 +49,7 @@ export default class MonitoringMonitor implements M {
 
     const history = await this.checkLogic();
     logger.debug(
-      "[monitoring] (#%s) Url: %s    Ping: %s     Status: %s",
+      '[monitoring] (#%s) Url: %s    Ping: %s     Status: %s',
       this.id,
       this.url,
       history.ping,
@@ -60,12 +60,9 @@ export default class MonitoringMonitor implements M {
       data: history.data,
     });
 
-    if (
-      this.cachedLastHistory &&
-      newHistory.status !== this.cachedLastHistory.status
-    ) {
+    if (this.cachedLastHistory && newHistory.status !== this.cachedLastHistory.status) {
       logger.info(
-        "[monitoring] (#%s) Status changed from %s to %s",
+        '[monitoring] (#%s) Status changed from %s to %s',
         this.id,
         this.cachedLastHistory.status,
         newHistory.status,
@@ -92,7 +89,7 @@ export default class MonitoringMonitor implements M {
    * @returns MonitoringMonitor The updated monitor
    */
   async checkLogic(): Promise<MonitoringHistory> {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   /**
@@ -129,7 +126,7 @@ export default class MonitoringMonitor implements M {
         monitorId: this.id,
       },
       orderBy: {
-        createdAt: "desc",
+        createdAt: 'desc',
       },
     });
   }
