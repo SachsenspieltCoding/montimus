@@ -1,5 +1,4 @@
 {
-  "plugins": ["node-workspace"],
   "release-type": "node",
   "draft-pull-request": true,
   "bump-minor-pre-major": true,
@@ -59,16 +58,7 @@
   ],
   "draft": true,
   "packages": {
-    ".": {},
-    "packages/backend": {
-      "extra-files": [
-        {
-          "type": "yaml",
-          "path": "openapi.yml",
-          "jsonpath": "$.info.version"
-        }
-      ]
-    }
+    ".": {}
   },
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
 }

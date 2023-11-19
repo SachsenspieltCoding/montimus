@@ -15,5 +15,6 @@ jobs:
     steps:
       - uses: google-github-actions/release-please-action@v3
         with:
-          command: manifest
+          release-type: 'node'
+          config-file: 'release-please-config.json'
           token: ${{ secrets.RELEASEPLEASE_TOKEN }}
