@@ -58,8 +58,8 @@
   ],
   "draft": true,
   "packages": {
-    "backend/": {
-      "release-type": "node"
+    ".": {
+      "extra-files": ["backend/package.json"]
     }
   },
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
