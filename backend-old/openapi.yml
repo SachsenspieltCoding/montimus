@@ -1,0 +1,358 @@
+# OUTDATED: This file is outdated and should be updated to match the current API
+# TODO: Update this file to match the current API
+
+openapi: "3.0.2"
+info:
+  title: Montimus API
+  version: "0.0.0"
+  license:
+    name: Apache 2.0
+    url: "https://www.apache.org/licenses/LICENSE-2.0.html"
+tags:
+  - name: General
+    description: General endpoints
+  - name: Monitors
+    description: Monitor endpoints
+paths:
+  /:
+    get:
+      tags:
+        - General
+      responses:
+        "200":
+          description: Returns the API version
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                  message:
+                    type: string
+                    description: API version
+                example:
+                  status: 200
+                  message: "1.0.0"
+  /helloworld:
+    get:
+      tags:
+        - General
+      responses:
+        "200":
+          description: Returns a hello world message
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                  message:
+                    type: string
+                    description: Hello world message
+                example:
+                  status: 200
+                  message: "Hello world!"
+  /monitors: # TODO: Add lastHistory to monitors when getting
+    get:
+      tags:
+        - Monitors
+      responses:
+        "200":
+          description: Returns an array of all monitors
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                  data:
+                    type: array
+                    description: List of monitors
+                    items:
+                      $ref: "#/components/schemas/Monitor"
+                example:
+                  status: 200
+                  data:
+                    [
+                      {
+                        id: 1,
+                        name: "Google",
+                        description: "Google website",
+                        url: "https://google.com",
+                        interval: 60,
+                        createdAt: "2021-01-01T00:00:00.000Z",
+                        updatedAt: "2021-01-01T00:00:00.000Z",
+                      },
+                      {
+                        id: 2,
+                        name: "Facebook",
+                        url: "https://facebook.com",
+                        interval: 120,
+                        createdAt: "2021-01-01T00:00:00.000Z",
+                        updatedAt: "2021-01-01T00:00:00.000Z",
+                      },
+                    ]
+    post:
+      tags:
+        - Monitors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Monitor"
+            example:
+              name: "Google"
+              description: "Google website"
+              url: "https://google.com"
+              interval: 60
+      responses:
+        "201":
+          description: Returns the created monitor
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                  data:
+                    $ref: "#/components/schemas/Monitor"
+                example:
+                  status: 201
+                  data:
+                    id: 1
+                    name: "Google"
+                    description: "Google website"
+                    url: "https://google.com"
+                    interval: 60
+                    createdAt: "2021-01-01T00:00:00.000Z"
+                    updatedAt: "2021-01-01T00:00:00.000Z"
+        "400":
+          description: The provided body is invalid
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                  message:
+                    type: string
+                    description: Error message
+                example:
+                  status: 400
+                  message: "Bad Request"
+        "409":
+          description: A monitor with the same id already exists
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                  message:
+                    type: string
+                    description: Error message
+                example:
+                  status: 409
+                  message: "Monitor already exists"
+  /monitors/{id}:
+    get:
+      tags:
+        - Monitors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Monitor ID
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Returns the monitor with the provided ID
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                example:
+                  status: 200
+                  data:
+                    id: 1
+                    name: "Google"
+                    description: "Google website"
+                    url: "https://google.com"
+                    interval: 60
+                    createdAt: "2021-01-01T00:00:00.000Z"
+                    updatedAt: "2021-01-01T00:00:00.000Z"
+        "404":
+          description: The monitor with the provided ID does not exist
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                  message:
+                    type: string
+                    description: Error message
+                example:
+                  status: 404
+                  message: "Monitor not found"
+    patch:
+      tags:
+        - Monitors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Monitor ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Monitor"
+            example:
+              name: "Updated Google"
+              description: "Google website"
+              url: "https://google.com"
+              interval: 60
+      responses:
+        "200":
+          description: Returns the updated monitor
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                  data:
+                    $ref: "#/components/schemas/Monitor"
+                example:
+                  status: 200
+                  data:
+                    id: 1
+                    name: "Updated Google"
+                    description: "Google website"
+                    url: "https://google.com"
+                    interval: 60
+                    createdAt: "2021-01-01T00:00:00.000Z"
+                    updatedAt: "2021-01-01T00:00:00.000Z"
+        "400":
+          description: The provided body is invalid
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                  message:
+                    type: string
+                    description: Error message
+                example:
+                  status: 400
+                  message: "Bad Request"
+        "404":
+          description: The monitor with the provided ID does not exist
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                  message:
+                    type: string
+                    description: Error message
+                example:
+                  status: 404
+                  message: "Monitor not found"
+    delete:
+      tags:
+        - Monitors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Monitor ID
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Monitor deleted successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                example:
+                  status: 204
+        "404":
+          description: The monitor with the provided ID does not exist
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                  message:
+                    type: string
+                    description: Error message
+                example:
+                  status: 404
+                  message: "Monitor not found"
+
+components:
+  schemas:
+    Monitor:
+      required:
+        - id
+        - name
+        - type
+        - url
+        - interval
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          description: Monitor ID
+        name:
+          type: string
+          description: Monitor name
+        description:
+          type: string
+          description: Monitor description
+        type:
+          type: string
+          description: Monitor type
+        url:
+          type: string
+          description: Monitor URL
+        interval:
+          type: integer
+          description: Monitor interval in seconds
+        createdAt:
+          type: string
+          format: date-time
+          description: Monitor creation date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Monitor last update date
