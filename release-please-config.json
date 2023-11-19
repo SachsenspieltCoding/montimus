@@ -58,9 +58,6 @@
   ],
   "draft": true,
   "packages": {
-    ".": {
-      "release-type": "none"
-    },
     "backend/": {
       "release-type": "node"
     }
