@@ -37,9 +37,15 @@ export class CryptoService {
   /**
    * Generates a JWT for a user
    * @param {Partial<User>} user The user to generate the JWT for
+   * @param {number} expiresIn (optional) The time in seconds for the JWT to expire
    * @returns {string} The JWT
    */
-  generateJwt(user: Partial<User>): string {
-    return this.jwtService.sign({ userId: user.id });
+  generateJwt(user: Partial<User>, expiresIn?: number): string {
+    return this.jwtService.sign(
+      { userId: user.id },
+      {
+        expiresIn: expiresIn || 60 * 60 * 24 * 30, // 30 days by default
+      },
+    );
   }
 }
