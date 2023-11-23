@@ -6,6 +6,7 @@ export class MontimusError {
   public static readonly UNAUTHORIZED = new MontimusError(10003, 'Unauthorized');
   public static readonly ALREADY_AUTHENTICATED = new MontimusError(10004, 'Already authenticated');
   public static readonly EXPIRED_AUTH_TOKEN = new MontimusError(10005, 'Expired authentication token');
+  public static readonly SESSION_NOT_FOUND = new MontimusError(10006, 'Session not found');
 
   constructor(
     private code: number,
