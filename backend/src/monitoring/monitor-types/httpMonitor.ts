@@ -1,9 +1,10 @@
 import { Monitor as M } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { Monitor, MonitorStatus, OmittedMonitorHistory } from '../models/Monitor';
 
 export class HttpMonitor extends Monitor {
-  constructor(data: M) {
-    super(data);
+  constructor(data: M, prisma: PrismaService) {
+    super(data, prisma);
   }
 
   override async check(): Promise<OmittedMonitorHistory> {

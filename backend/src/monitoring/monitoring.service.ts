@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Monitor, OmittedMonitorHistory } from './models/Monitor';
+import { Monitor } from './models/Monitor';
 import { MonitorType } from './monitoring.module';
 
 @Injectable()
@@ -9,10 +8,7 @@ export class MonitoringService {
   private readonly logger = new Logger(MonitoringService.name);
   private monitors: Monitor[] = [];
 
-  constructor(
-    private prisma: PrismaService,
-    private moduleRef: ModuleRef,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   /**
    * Initializes all monitors from the database
@@ -25,7 +21,7 @@ export class MonitoringService {
       const monitorType = MonitorType[monitor.type.toUpperCase()];
       if (monitorType) {
         this.logger.log(`Creating monitor ${monitor.name}`);
-        const monitorInstance = new monitorType(monitor);
+        const monitorInstance = new monitorType(monitor, this.prisma);
         this.monitors.push(monitorInstance);
       } else {
         this.logger.warn(`Monitor ${monitor.name} has an invalid type ${monitor.type}`);
@@ -76,15 +72,5 @@ export class MonitoringService {
    */
   getMonitorByName(name: string): Monitor {
     return this.monitors.find((monitor) => monitor.name === name);
-  }
-
-  handleCheck(monitor: Monitor, history: OmittedMonitorHistory): void {
-    this.logger.log(`Monitor ${monitor.name} (${monitor.id}) checked`);
-    // this.prisma.monitorHistory.create({
-    //   data: {
-    //     monitor_id: monitor.id,
-    //     ...history,
-    //   },
-    // });
   }
 }

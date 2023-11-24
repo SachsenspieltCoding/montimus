@@ -1,15 +1,19 @@
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Monitor as M, MonitorHistory } from '@prisma/client';
 import { CronJob, CronTime } from 'cron';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 export type OmittedMonitorHistory = Omit<MonitorHistory, 'id' | 'monitorId' | 'createdAt'>;
 
 export const MonitorStatus = {
-  UNKNOWN: -1,
-  UP: 0,
-  DOWN: 1,
+  UNKNOWN: 0,
+  UP: 1,
+  DOWN: 2,
+  DEGRADED: 3,
+  MAINTENANCE: 4,
 };
 
+@Injectable()
 export class Monitor implements M {
   id: number;
   name: string;
@@ -25,7 +29,10 @@ export class Monitor implements M {
   private job: CronJob;
   protected logger: Logger;
 
-  constructor(data: M) {
+  constructor(
+    data: M,
+    private prisma: PrismaService,
+  ) {
     this.id = data.id;
     this.name = data.name;
     this.description = data.description;
@@ -38,8 +45,43 @@ export class Monitor implements M {
     this.updatedAt = data.updatedAt;
     this.logger = new Logger(`Monitor - ${this.name} (${this.id})`);
 
-    this.job = new CronJob(`*/${this.interval} * * * * *`, () => {
-      this.check();
+    this.job = new CronJob(`*/${this.interval} * * * * *`, async () => {
+      const history = await this.check();
+
+      const lastHistory = await this.prisma.monitorHistory.findFirst({
+        where: {
+          monitorId: this.id,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      // Check if the status changed since the last check and create an event if it did
+      if (lastHistory) {
+        if (lastHistory.status !== history.status) {
+          this.logger.log(
+            `Status changed from ${Object.keys(MonitorStatus)[lastHistory.status]} to ${
+              Object.keys(MonitorStatus)[history.status]
+            }`,
+          );
+          await this.prisma.monitorEvents.create({
+            data: {
+              monitorId: this.id,
+              oldStatus: lastHistory.status,
+              newStatus: history.status,
+              // TODO: Add event messages (e.g. "Monitor was down for 5 minutes", "Monitor is back up")
+            },
+          });
+        }
+      }
+
+      await this.prisma.monitorHistory.create({
+        data: {
+          ...history,
+          monitorId: this.id,
+        },
+      });
     });
   }
 
