@@ -7,8 +7,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './routes/auth/auth.module';
 import { UserModule } from './routes/user/user.module';
 import { JobsModule } from './jobs/jobs.module';
+import { MonitoringModule } from './monitoring/monitoring.module';
 @Module({
-  imports: [ScheduleModule.forRoot(), AuthModule, PrismaModule, CryptoModule, UserModule, JobsModule],
+  imports: [ScheduleModule.forRoot(), AuthModule, PrismaModule, CryptoModule, UserModule, JobsModule, MonitoringModule],
   providers: [
     {
       provide: APP_GUARD,
