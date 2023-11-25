@@ -1,5 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Monitor as PrismaMonitor } from '@prisma/client';
+import { MontimusError } from 'src/common/errorCodes';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateMonitorDto } from 'src/routes/monitoring/dto/create-monitor.dto';
+import { UpdateMonitorDto } from 'src/routes/monitoring/dto/update-monitor.dto';
 import { Monitor } from './models/Monitor';
 import { MonitorType } from './monitoring.module';
 
@@ -16,18 +20,7 @@ export class MonitoringService {
    */
   async init(): Promise<void> {
     const monitors = await this.prisma.monitor.findMany({});
-
-    for (const monitor of monitors) {
-      const monitorType = MonitorType[monitor.type.toUpperCase()];
-      if (monitorType) {
-        this.logger.log(`Creating monitor ${monitor.name}`);
-        const monitorInstance = new monitorType(monitor, this.prisma);
-        this.monitors.push(monitorInstance);
-      } else {
-        this.logger.warn(`Monitor ${monitor.name} has an invalid type ${monitor.type}`);
-      }
-    }
-
+    monitors.forEach((monitor) => this.monitors.push(this.instanciateMonitor(monitor)));
     this.logger.log('Created all monitors from db');
     this.startAll();
   }
@@ -49,6 +42,24 @@ export class MonitoringService {
   }
 
   /**
+   * Creates a partial monitor
+   * @param {Monitor} monitor The monitor
+   * @returns {Partial<Monitor>} The partial monitor
+   */
+  partialMonitor(monitor: Monitor): Partial<Monitor> {
+    return {
+      id: monitor.id,
+      name: monitor.name,
+      description: monitor.description,
+      type: monitor.type,
+      url: monitor.url,
+      interval: monitor.interval,
+      parameters_json: monitor.parameters_json,
+      updatedAt: monitor.updatedAt,
+    };
+  }
+
+  /**
    * Returns all monitors
    * @returns {Monitor[]} An array of monitors
    */
@@ -59,18 +70,86 @@ export class MonitoringService {
   /**
    * Returns a monitor by its id
    * @param {number} id The id of the monitor
-   * @returns {Monitor} The monitor
+   * @returns {Monitor | null} The monitor or null if not found
    */
-  getMonitor(id: number): Monitor {
-    return this.monitors.find((monitor) => monitor.id === id);
+  getMonitor(id: number): Monitor | null {
+    const monitor = this.monitors.find((monitor) => monitor.id === id);
+    if (!monitor) return null;
+    return monitor;
   }
 
   /**
-   * Returns a monitor by its name
-   * @param {string} name The name of the monitor
-   * @returns {Monitor} The monitor
+   * Creates a monitor
+   * @param {CreateMonitorDto} monitorDto The monitor dto
+   * @param {number} ownerId The id of the owner
+   * @returns {Promise<Monitor>} The created monitor
    */
-  getMonitorByName(name: string): Monitor {
-    return this.monitors.find((monitor) => monitor.name === name);
+  async createMonitor(monitorDto: CreateMonitorDto, ownerId: number): Promise<Monitor> {
+    const monitor = await this.prisma.monitor.create({
+      data: {
+        ...monitorDto,
+        ownerId,
+      },
+    });
+    const monitorInstance = this.instanciateMonitor(monitor);
+    this.monitors.push(monitorInstance);
+    monitorInstance.start();
+    return monitorInstance;
+  }
+
+  /**
+   * Instanciates a monitor from a prisma monitor
+   * @param {PrismaMonitor} monitor The prisma monitor
+   * @returns {Monitor} The monitor
+   * @throws {Error} If the monitor type is invalid
+   */
+  instanciateMonitor(monitor: PrismaMonitor): Monitor {
+    const monitorType = MonitorType[monitor.type.toUpperCase()];
+    if (monitorType) {
+      const monitorInstance = new monitorType(monitor, this.prisma);
+      return monitorInstance;
+    } else {
+      throw new Error(MontimusError.INVALID_MONITOR_TYPE(monitor.type).toString());
+    }
+  }
+
+  /**
+   * Deletes a monitor
+   * @param {number} id The id of the monitor
+   * @returns {Promise<boolean>} A promise that resolves to true if the monitor was deleted
+   */
+  async deleteMonitor(id: number): Promise<boolean> {
+    const monitor = this.getMonitor(id);
+    if (!monitor) throw new Error(MontimusError.MONITOR_NOT_FOUND.toString());
+    monitor.stop();
+    await this.prisma.monitor.delete({
+      where: {
+        id,
+      },
+    });
+    this.monitors = this.monitors.filter((monitor) => monitor.id !== id);
+    this.logger.log(`Deleted monitor ${id}`);
+    return true;
+  }
+
+  /**
+   * Updates a monitor
+   * @param {number} id The id of the monitor
+   * @param {UpdateMonitorDto} updateMonitorDto The updated monitor
+   * @returns {Promise<Monitor>} The updated monitor
+   */
+  async updateMonitor(id: number, updateMonitorDto: UpdateMonitorDto): Promise<Monitor> {
+    const monitor = this.getMonitor(id);
+    if (!monitor) throw new Error(MontimusError.MONITOR_NOT_FOUND.toString());
+    await this.prisma.monitor.update({
+      where: {
+        id,
+      },
+      data: {
+        ...updateMonitorDto,
+      },
+    });
+    monitor.update(updateMonitorDto);
+    return monitor;
   }
 }

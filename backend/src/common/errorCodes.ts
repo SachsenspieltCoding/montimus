@@ -8,6 +8,11 @@ export class MontimusError {
   public static readonly EXPIRED_AUTH_TOKEN = new MontimusError(10005, 'Expired authentication token');
   public static readonly SESSION_NOT_FOUND = new MontimusError(10006, 'Session not found');
 
+  // -- MONITORING ERRORS -- //
+  public static readonly INVALID_MONITOR_TYPE = (type: string) =>
+    new MontimusError(10100, `Invalid monitor type ${type}`);
+  public static readonly MONITOR_NOT_FOUND = new MontimusError(10101, 'Monitor not found');
+
   constructor(
     private code: number,
     private defaultMessage: string,

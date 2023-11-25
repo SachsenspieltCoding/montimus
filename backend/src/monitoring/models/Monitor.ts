@@ -122,6 +122,21 @@ export class Monitor implements M {
   }
 
   /**
+   * Updates the monitor
+   * @param {Partial<M>} data The data to update
+   * @returns {void}
+   */
+  update(data: Partial<M>): void {
+    if (data.name) this.name = data.name;
+    if (data.description) this.description = data.description;
+    if (data.type) this.type = data.type;
+    if (data.url) this.url = data.url;
+    if (data.interval) this.updateInterval(data.interval);
+    if (data.parameters_json) this.parameters_json = data.parameters_json;
+    this.logger.log('Updated monitor');
+  }
+
+  /**
    * Updates the interval of the monitor
    * @param {number} interval The new interval
    * @returns {void}

@@ -33,7 +33,7 @@ model MonitorHistory {
   id     Int @id @default(autoincrement())
   status Int @default(-1)
 
-  monitor   Monitor @relation(fields: [monitorId], references: [id])
+  monitor   Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
   monitorId Int
 
   ping      Int?
@@ -47,7 +47,7 @@ model MonitorHistory {
 model MonitorEvents {
   id Int @id @default(autoincrement())
 
-  monitor   Monitor @relation(fields: [monitorId], references: [id])
+  monitor   Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
   monitorId Int
 
   oldStatus Int
