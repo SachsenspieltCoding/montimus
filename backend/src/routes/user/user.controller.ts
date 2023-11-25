@@ -8,6 +8,11 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Get()
+  async getUser(@CurrentUser() user: User) {
+    return this.userService.partial(user);
+  }
+
   @Get('sessions')
   getSessions(@CurrentUser() user: User) {
     return this.userService.getSessions(user);
@@ -19,5 +24,13 @@ export class UserController {
     const session = await this.userService.getSession(user, Number(sessionId));
     if (!session) throw new NotFoundException(MontimusError.SESSION_NOT_FOUND.toJSON());
     return session;
+  }
+
+  @Get('sessions/:sessionId/revoke')
+  async revokeSession(@CurrentUser() user: User, @Param('sessionId') sessionId: string) {
+    if (isNaN(Number(sessionId))) throw new BadRequestException('Invalid session ID');
+    const session = await this.userService.getSession(user, Number(sessionId));
+    if (!session) throw new NotFoundException(MontimusError.SESSION_NOT_FOUND.toJSON());
+    return { revoked: await this.userService.revokeSession(user, session.id) };
   }
 }

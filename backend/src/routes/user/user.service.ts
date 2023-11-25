@@ -61,4 +61,30 @@ export class UserService {
       },
     });
   }
+
+  /**
+   * Revokes a session by id for a user (or the current user)
+   * @param {User} user The current user
+   * @param {number} sessionId The session ID to revoke
+   * @returns {Partial<boolean>} Whether the session was revoked
+   */
+  revokeSession(user: User, sessionId: number): Promise<boolean> {
+    return this.prisma.userSessions
+      .delete({
+        where: {
+          id: sessionId,
+          userId: user.id,
+        },
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+          expiresAt: true,
+        },
+      })
+      .then((session) => {
+        return !!session;
+      });
+  }
 }

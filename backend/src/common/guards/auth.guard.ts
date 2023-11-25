@@ -15,6 +15,12 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
+    const response = context.switchToHttp().getResponse();
+
+    function error(err: MontimusError): void {
+      response.cookie('MONTIMUS_SESSION_TOKEN', '', { maxAge: 0 });
+      throw new UnauthorizedException(err.toJSON());
+    }
 
     const { MONTIMUS_SESSION_TOKEN } = request.cookies;
 
@@ -25,27 +31,27 @@ export class AuthGuard implements CanActivate {
 
     if (isPublic && !token) return true;
 
-    if (!token) throw new UnauthorizedException(MontimusError.MISSING_AUTH_TOKEN.toJSON());
+    if (!token) error(MontimusError.MISSING_AUTH_TOKEN);
 
-    if (isUnauthenticatedOnly) throw new UnauthorizedException(MontimusError.ALREADY_AUTHENTICATED.toJSON());
+    if (isUnauthenticatedOnly) error(MontimusError.ALREADY_AUTHENTICATED);
 
     const decoded = await this.jwtService.decode(token);
 
-    if (!decoded) throw new UnauthorizedException(MontimusError.INVALID_AUTH_TOKEN.toJSON());
+    if (!decoded) error(MontimusError.INVALID_AUTH_TOKEN);
 
     const session = await this.prisma.userSessions.findFirst({
       where: { jwt: token },
       include: { user: true },
     });
 
-    if (!session) throw new UnauthorizedException(MontimusError.INVALID_AUTH_TOKEN.toJSON());
+    if (!session) error(MontimusError.SESSION_NOT_FOUND);
 
     if (session.expiresAt < new Date()) {
       await this.prisma.userSessions.delete({ where: { id: session.id } });
-      throw new UnauthorizedException(MontimusError.EXPIRED_AUTH_TOKEN.toJSON());
+      error(MontimusError.EXPIRED_AUTH_TOKEN);
     }
 
-    if (!session.user) throw new UnauthorizedException(MontimusError.UNAUTHORIZED.toJSON());
+    if (!session.user) error(MontimusError.UNAUTHORIZED);
 
     request.user = session.user;
 
