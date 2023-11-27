@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
@@ -64,5 +64,20 @@ export class MonitoringRESTController {
   @ApiTags('Monitoring')
   async remove(@Param('id') id: string) {
     return { deleted: await this.monitoringService.remove(+id) };
+  }
+
+  @Get(':id/history')
+  async getHistory(@Param('id') id: string, @Query('limit') limit?: string, @Query('offset') offset?: string) {
+    return this.monitoringService.getHistory(+id, limit, offset);
+  }
+
+  // @Get(':id/history/latest')
+  // async getLatestHistory(@Param('id') id: string) {
+  //   return this.monitoringService.getLatestHistory(+id);
+  // }
+
+  @Get(':id/history/ping/raw')
+  async getPingHistory(@Param('id') id: string, @Query('limit') limit?: string, @Query('offset') offset?: string) {
+    return this.monitoringService.getPingRaw(+id, limit, offset);
   }
 }

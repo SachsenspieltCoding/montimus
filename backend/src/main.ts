@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
@@ -38,7 +38,20 @@ async function bootstrap() {
     customSiteTitle: 'Montimus API Docs',
   });
 
-  await app.listen(3000);
+  await app.listen(process.env.BACKEND_PORT || 3000).then(() => {
+    const logger = new Logger('Bootstrap');
+    console.log();
+
+    console.log(
+      '\x1b[33m%s\x1b[0m',
+      '░▒█▀▄▀█░▄▀▀▄░█▀▀▄░▀█▀░░▀░░█▀▄▀█░█░▒█░█▀▀░░░▒█▀▀▄░█▀▀▄░█▀▄░█░▄░█▀▀░█▀▀▄░█▀▄░░░█▀▀▄░▒█▀▀█░▀█▀\n░▒█▒█▒█░█░░█░█░▒█░░█░░░█▀░█░▀░█░█░▒█░▀▀▄░░░▒█▀▀▄░█▄▄█░█░░░█▀▄░█▀▀░█░▒█░█░█░░▒█▄▄█░▒█▄▄█░▒█░\n░▒█░░▒█░░▀▀░░▀░░▀░░▀░░▀▀▀░▀░░▒▀░░▀▀▀░▀▀▀░░░▒█▄▄█░▀░░▀░▀▀▀░▀░▀░▀▀▀░▀░░▀░▀▀░░░▒█░▒█░▒█░░░░▄█▄',
+    );
+
+    console.log();
+
+    logger.log(`Montimus v${packageJson.version || '0.0.0'}`);
+    logger.log(`Listening on port ${process.env.BACKEND_PORT || 3000}`);
+  });
 }
 
 bootstrap();

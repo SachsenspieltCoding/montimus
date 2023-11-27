@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Monitor as PrismaMonitor } from '@prisma/client';
+import { MonitorHistory, Monitor as PrismaMonitor } from '@prisma/client';
 import { MontimusError } from 'src/common/errorCodes';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMonitorDto } from 'src/routes/monitoring/dto/create-monitor.dto';
@@ -56,6 +56,21 @@ export class MonitoringService {
       interval: monitor.interval,
       parameters_json: monitor.parameters_json,
       updatedAt: monitor.updatedAt,
+    };
+  }
+
+  /**
+   * Creates a partial history
+   * @param {MonitorHistory} history The history
+   * @returns {Partial<MonitorHistory>} The partial history
+   */
+  partialHistory(history: MonitorHistory): Partial<MonitorHistory> {
+    return {
+      id: history.id,
+      status: history.status,
+      ping: history.ping,
+      info_json: history.info_json,
+      createdAt: history.createdAt,
     };
   }
 
@@ -151,5 +166,51 @@ export class MonitoringService {
     });
     monitor.update(updateMonitorDto);
     return monitor;
+  }
+
+  /**
+   * Returns the history of a monitor
+   * @param {number} id The id of the monitor
+   * @param {number} take The number of entries to take
+   * @param {number} skip The number of entries to skip
+   * @returns {Promise<Partial<MonitorHistory>[]>} An array of monitor history entries
+   */
+  async getMonitorHistory(id: number, take?: number, skip?: number): Promise<Partial<MonitorHistory>[]> {
+    const monitor = this.getMonitor(id);
+    if (!monitor) throw new Error(MontimusError.MONITOR_NOT_FOUND.toString());
+    const history = await this.prisma.monitorHistory.findMany({
+      where: {
+        monitorId: id,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take,
+      skip,
+    });
+    return history.map((history) => this.partialHistory(history));
+  }
+
+  /**
+   * Returns the raw ping history of a monitor
+   * @param {number} id The id of the monitor
+   * @param {number} take The number of entries to take
+   * @param {number} skip The number of entries to skip
+   * @returns {Promise<number[]>} An array of ping values
+   */
+  async getPingRaw(id: number, take?: number, skip?: number): Promise<number[]> {
+    const monitor = this.getMonitor(id);
+    if (!monitor) throw new Error(MontimusError.MONITOR_NOT_FOUND.toString());
+    const history = await this.prisma.monitorHistory.findMany({
+      where: {
+        monitorId: id,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take,
+      skip,
+    });
+    return history.map((history) => history.ping);
   }
 }
