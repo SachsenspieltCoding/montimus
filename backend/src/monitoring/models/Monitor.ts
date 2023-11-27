@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Monitor as M, MonitorHistory } from '@prisma/client';
 import { CronJob, CronTime } from 'cron';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { MonitorDto } from './MonitorDto';
 
 export type OmittedMonitorHistory = Omit<MonitorHistory, 'id' | 'monitorId' | 'createdAt'>;
 
@@ -14,18 +15,7 @@ export const MonitorStatus = {
 };
 
 @Injectable()
-export class Monitor implements M {
-  id: number;
-  name: string;
-  description: string;
-  type: string;
-  url: string;
-  interval: number;
-  parameters_json: string;
-  ownerId: number;
-  createdAt: Date;
-  updatedAt: Date;
-
+export class Monitor extends MonitorDto {
   private job: CronJob;
   protected logger: Logger;
 
@@ -33,6 +23,7 @@ export class Monitor implements M {
     data: M,
     private prisma: PrismaService,
   ) {
+    super();
     this.id = data.id;
     this.name = data.name;
     this.description = data.description;
